@@ -5,6 +5,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorManager;
+import android.media.MediaPlayer;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -19,8 +20,10 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private int sensorSpeed;
 
     private long lastUpdate = 0;
-    private float x, y, z;
+    private float last_x, last_y, last_z;
     private static final int SHAKE_THRESHOLD = 600;
+
+    MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +33,12 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         this.sensorSpeed = SensorManager.SENSOR_DELAY_GAME;
 
         // Initialize the accelerometer sensor
-            sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-            accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-            sensorManager.registerListener(this, accelerometer, this.sensorSpeed);
+            this.sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+            this.accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            this.sensorManager.registerListener(this, accelerometer, this.sensorSpeed);
+
+        // Initialize the sound affect. From http://www.freesound.org/people/sandyrb/sounds/36248/
+            this.mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.snare);
     }
 
     @Override
@@ -74,9 +80,9 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
         if (mySensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
-            this.x = sensorEvent.values[0];
-            this.y = sensorEvent.values[1];
-            this.z = sensorEvent.values[2];
+            float x = sensorEvent.values[0];
+            float y = sensorEvent.values[1];
+            float z = sensorEvent.values[2];
 
             long currentTime = System.currentTimeMillis();
 
@@ -85,15 +91,24 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
             if ((currentTime - lastUpdate) > checkEveryMilliseconds) {
                 long differenceInTime = (currentTime - lastUpdate);
                 lastUpdate = currentTime;
+
+                float speed = Math.abs(x + y + z - last_x - last_y - last_z) / differenceInTime * 10000;
+                int shake_threshold = 1700;
+
+                if (speed > shake_threshold)
+                {
+                    // Make a noise!
+                    mediaPlayer.start();
+                }
             }
 
             // Update onscreen values
             TextView xValue = (TextView) findViewById(R.id.xValue);
             TextView yValue = (TextView) findViewById(R.id.yValue);
             TextView zValue = (TextView) findViewById(R.id.zValue);
-            xValue.setText("x: " + this.x);
-            yValue.setText("y: " + this.y);
-            zValue.setText("z: " + this.z);
+            xValue.setText("x: " + x);
+            yValue.setText("y: " + y);
+            zValue.setText("z: " + z);
         }
     }
 
