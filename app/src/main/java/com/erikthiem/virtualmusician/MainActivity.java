@@ -1,6 +1,7 @@
 package com.erikthiem.virtualmusician;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.hardware.SensorEventListener;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +11,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -39,6 +41,11 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
 
         // Initialize the sound affect. From http://www.freesound.org/people/sandyrb/sounds/36248/
             this.mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.snare);
+
+        // Initialize the background image. From https://openclipart.org/detail/217178/BW-Set
+            ImageView drumImage = (ImageView) findViewById(R.id.drumImage);
+            Drawable drumDrawable = getResources().getDrawable(R.drawable.drumset);
+        drumImage.setImageDrawable(drumDrawable);
     }
 
     @Override
@@ -95,20 +102,11 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
                 float speed = Math.abs(x + y + z - last_x - last_y - last_z) / differenceInTime * 10000;
                 int shake_threshold = 1700;
 
-                if (speed > shake_threshold)
-                {
+                if (speed > shake_threshold) {
                     // Make a noise!
                     mediaPlayer.start();
                 }
             }
-
-            // Update onscreen values
-            TextView xValue = (TextView) findViewById(R.id.xValue);
-            TextView yValue = (TextView) findViewById(R.id.yValue);
-            TextView zValue = (TextView) findViewById(R.id.zValue);
-            xValue.setText("x: " + x);
-            yValue.setText("y: " + y);
-            zValue.setText("z: " + z);
         }
     }
 
