@@ -1,5 +1,6 @@
 package com.erikthiem.virtualmusician;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.hardware.SensorEventListener;
@@ -11,11 +12,12 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity implements SensorEventListener {
+public class MainActivity extends Activity implements SensorEventListener {
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -25,7 +27,7 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
     private float last_x, last_y, last_z;
     private static final int SHAKE_THRESHOLD = 600;
 
-    MediaPlayer mediaPlayer;
+    private MediaPlayer mediaPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,11 @@ public class MainActivity extends ActionBarActivity implements SensorEventListen
         // Initialize the background image. From https://openclipart.org/detail/217178/BW-Set
             ImageView drumImage = (ImageView) findViewById(R.id.drumImage);
             Drawable drumDrawable = getResources().getDrawable(R.drawable.drumset);
-        drumImage.setImageDrawable(drumDrawable);
+            drumImage.setImageDrawable(drumDrawable);
+
+        // Make app fullscreen by hiding the navigation bar
+
+
     }
 
     @Override
